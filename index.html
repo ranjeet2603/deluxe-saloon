@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Deluxe Saloon | डीलक्स सैलून — 90s Street Radio</title>
+  
+  <!-- Web App & Theme Color -->
+  <meta name="theme-color" content="#b83227" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Google Fonts: Rozha One & Yatra One (Retro Hindi Signboard), Cinzel, Lora & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=JetBrains+Mono:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Rozha+One&family=Yatra+One&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            saloon: {
+              cream: '#fbf7ee',
+              card: '#f3ece0',
+              cardHover: '#ebe1d0',
+              red: '#b83227',
+              redDark: '#8a2018',
+              gold: '#c9933d',
+              goldDark: '#9b6c20',
+              ink: '#26211b',
+              inkMuted: '#6d6254',
+              border: '#decbb4',
+              borderDark: '#c7b196',
+            }
+          },
+          fontFamily: {
+            hindi: ['"Rozha One"', '"Yatra One"', 'serif'],
+            vintage: ['"Cinzel"', 'serif'],
+            bodySerif: ['"Lora"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          keyframes: {
+            barberScroll: {
+              '0%': { backgroundPosition: '0% 0%' },
+              '100%': { backgroundPosition: '100% 100%' }
+            },
+            reelSpin: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' }
+            }
+          },
+          animation: {
+            barber: 'barberScroll 3s linear infinite',
+            spinReel: 'reelSpin 3.5s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Traditional Barber Pole Striped Gradient */
+    .barber-pole {
+      background: repeating-linear-gradient(
+        45deg,
+        #b83227,
+        #b83227 10px,
+        #fbf7ee 10px,
+        #fbf7ee 20px,
+        #1e3a8a 20px,
+        #1e3a8a 30px,
+        #fbf7ee 30px,
+        #fbf7ee 40px
+      );
+      background-size: 56px 56px;
+    }
+
+    /* Range input scrubber thumb */
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #b83227;
+      border: 2px solid #fbf7ee;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #b83227;
+      border: 2px solid #fbf7ee;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+
+    /* Hide standard scrollbars for a clean app feel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Tape texture styling */
+    .tape-pattern {
+      background: linear-gradient(135deg, #1c1814 25%, #231e19 25%, #231e19 50%, #1c1814 50%, #1c1814 75%, #231e19 75%, #231e19 100%);
+      background-size: 8px 8px;
+    }
+  </style>
+</head>
+
+<body class="bg-[#12100e] text-saloon-ink min-h-screen flex justify-center items-start selection:bg-saloon-red selection:text-white font-bodySerif antialiased">
+
+  <!-- Hidden YouTube IFrame Engine Host -->
+  <div class="fixed -top-96 -left-96 w-1 h-1 overflow-hidden opacity-0 pointer-events-none" aria-hidden="true">
+    <div id="yt-player-anchor"></div>
+  </div>
+
+  <!-- Outer Mobile Container (Desktop framed, 100% native feel on mobile) -->
+  <div id="appShell" class="w-full max-w-md min-h-screen bg-saloon-cream border-x border-[#332b22] shadow-2xl relative flex flex-col pb-36 overflow-x-hidden">
+
+    <!-- Top Bar: Live Status & Barber Pole Badge -->
+    <header class="sticky top-0 z-40 bg-saloon-cream/95 backdrop-blur-md border-b border-saloon-border px-4 py-2.5 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-2">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-saloon-red opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-saloon-red"></span>
+        </span>
+        <span class="font-mono text-[10px] uppercase font-bold tracking-wider text-saloon-redDark flex items-center gap-1">
+          <span id="liveClockText">9:00 AM</span> • ऑल इंडिया सैलून FM
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="togglePwaModal()" class="text-[10px] font-mono uppercase bg-saloon-card border border-saloon-border hover:border-saloon-gold px-2 py-0.5 rounded text-saloon-ink font-semibold flex items-center gap-1 shadow-xs active:scale-95 transition">
+          <i data-lucide="download" class="w-3 h-3 text-saloon-goldDark"></i>
+          <span>App</span>
+        </button>
+
+        <div class="w-3.5 h-5 rounded-xs border border-saloon-ink/40 barber-pole animate-barber shadow-inner" title="Deluxe Saloon Live Pole"></div>
+      </div>
+    </header>
+
+    <!-- Hero Branding Section -->
+    <section class="px-5 pt-4 pb-2 text-center border-b border-saloon-border/70 relative">
+      <div class="inline-block px-3 py-0.5 mb-1.5 border border-dashed border-saloon-gold text-saloon-goldDark text-[10px] font-mono tracking-widest uppercase rounded-sm bg-saloon-card">
+        ★ ESTD. 1992 • कल्याणी चौक रेडियो ★
+      </div>
+
+      <h1 class="text-4xl font-hindi font-black text-saloon-red tracking-wide drop-shadow-xs">
+        डीलक्स सैलून
+      </h1>
+      <p class="font-vintage text-xs tracking-[0.25em] text-saloon-ink uppercase font-bold mt-0.5">
+        Deluxe Saloon & Hair Dressers
+      </p>
+
+      <p class="text-[11px] italic text-saloon-inkMuted leading-relaxed max-w-xs mx-auto mt-2">
+        "Pure 90s cassette tapes played from morning chai until the shop shutters drop at midnight."
+      </p>
+
+      <!-- Vintage Vinyl & Street Noise Synthesizer Toggle -->
+      <div class="mt-3 flex items-center justify-center">
+        <button id="crackleToggleBtn" onclick="toggleCrackleEffect()" class="flex items-center gap-2 text-[11px] font-mono px-3.5 py-1.5 rounded-full border border-saloon-border bg-saloon-card hover:bg-saloon-cardHover text-saloon-ink transition active:scale-95 shadow-xs">
+          <i data-lucide="disc" id="crackleIcon" class="w-3.5 h-3.5 text-saloon-goldDark"></i>
+          <span>Street Vinyl Crackle: <b id="crackleLabel" class="text-saloon-redDark">OFF</b></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Curated Rotations Selector -->
+    <section class="p-3.5 border-b border-saloon-border bg-saloon-card/40">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-saloon-inkMuted flex items-center gap-1.5">
+          <i data-lucide="radio" class="w-3.5 h-3.5 text-saloon-red"></i>
+          Cassette Channels
+        </span>
+        <span id="activeChannelBadge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-saloon-red text-white font-semibold">
+          Highway Raat
+        </span>
+      </div>
+
+      <!-- Rotation Chips -->
+      <div class="flex gap-2 overflow-x-auto pb-1 text-xs no-scrollbar" id="rotationChips"></div>
+    </section>
+
+    <!-- Cassette Deck Deck Visualizer -->
+    <section class="p-4 flex flex-col items-center justify-center border-b border-saloon-border">
+      
+      <!-- Cassette Body Frame -->
+      <div class="w-full max-w-[340px] bg-[#1e1914] p-3 rounded-xl border-4 border-[#3a3127] shadow-xl relative text-[#eee5d8]">
+        
+        <!-- Cassette Top Banner -->
+        <div class="bg-saloon-red text-white px-3 py-1 rounded-t flex justify-between items-center text-[10px] font-mono tracking-widest font-bold">
+          <span>TDK D-90 • HI-FI CASSETTE</span>
+          <span class="bg-saloon-redDark px-1.5 py-0.5 rounded text-[9px]">SIDE A</span>
+        </div>
+
+        <!-- Center Tape Sticker & Spools Window -->
+        <div class="bg-[#e7dcce] text-saloon-ink p-2.5 rounded-b border-t-2 border-saloon-redDark">
+          
+          <!-- Handwritten Tape Song Label -->
+          <div class="w-full text-center border-b border-saloon-ink/20 pb-1 mb-2">
+            <span id="cassetteTapeLabel" class="font-vintage font-bold text-xs tracking-wider uppercase text-saloon-redDark truncate block">
+              CHURA KE DIL MERA (1994)
+            </span>
+          </div>
+
+          <!-- Spools Chamber with Tape Strip -->
+          <div class="w-full bg-[#18130f] rounded-lg p-2.5 flex items-center justify-around border border-[#3e3227] shadow-inner relative tape-pattern">
+            <!-- Left Spool Reel -->
+            <div id="reelLeft" class="w-12 h-12 rounded-full border-2 border-dashed border-[#8d7966] bg-[#29221b] flex items-center justify-center transition-transform">
+              <div class="w-4 h-4 rounded-full bg-[#14100d] border border-[#a89078] flex items-center justify-center">
+                <div class="w-1.5 h-1.5 rounded-full bg-saloon-gold"></div>
+              </div>
+            </div>
+
+            <!-- Tape Counter & Viewing Window -->
+            <div class="flex flex-col items-center">
+              <span id="tapeCounterDisplay" class="font-mono text-[10px] text-saloon-gold font-bold bg-black/70 px-2 py-0.5 rounded border border-[#3e3227]">
+                000
+              </span>
+              <!-- Magnetic Tape Ribbon Indicator -->
+              <div class="w-14 h-1.5 bg-[#422e1b] rounded mt-1.5 border border-[#26190e]"></div>
+            </div>
+
+            <!-- Right Spool Reel -->
+            <div id="reelRight" class="w-12 h-12 rounded-full border-2 border-dashed border-[#8d7966] bg-[#29221b] flex items-center justify-center transition-transform">
+              <div class="w-4 h-4 rounded-full bg-[#14100d] border border-[#a89078] flex items-center justify-center">
+                <div class="w-1.5 h-1.5 rounded-full bg-saloon-gold"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stereo VU Meter Simulation -->
+          <div class="mt-2.5 px-2 flex items-center justify-between bg-saloon-cream border border-saloon-border rounded py-1">
+            <span class="font-mono text-[9px] text-saloon-inkMuted font-bold">VU CH-L</span>
+            <div class="flex gap-1 flex-1 mx-2" id="vuL">
+              <div class="h-1.5 flex-1 rounded-xs bg-[#c7b196]"></div>
+              <div class="h-1.5 flex-1 rounded-xs bg-[#c7b196]"></div>
+              <div class="h-1.5 flex-1 rounded-xs bg-[#c7b196]"></div>
+              <div class="h-1.5 flex-1 rounded-xs bg-[#c7b196]"></div>
+              <div class="h-1.5 flex-1 rounded-xs bg-[#c7b196]"></div>
+              <div class="h-1.5 flex-1 rounded-xs bg-saloon-red opacity-30"></div>
+            </div>
+            <span class="font-mono text-[9px] text-saloon-inkMuted font-bold">CH-R</span>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center text-[9px] text-[#8e8172] font-mono mt-1.5 px-1">
+          <span>● DOLBY B NR</span>
+          <span>MADE IN INDIA</span>
+        </div>
+      </div>
+
+      <!-- Engine Status & Quality Badge -->
+      <div class="mt-3 flex items-center justify-between w-full max-w-[340px] px-1 text-[11px] font-mono text-saloon-inkMuted">
+        <span id="engineStatusTag" class="px-2 py-0.5 rounded bg-saloon-card border border-saloon-border text-saloon-ink font-semibold flex items-center gap-1">
+          <i data-lucide="disc-3" class="w-3 h-3 text-saloon-goldDark"></i>
+          <span>Tape Paused</span>
+        </span>
+        <button onclick="toggleQueueDrawer()" class="text-saloon-red font-semibold hover:underline flex items-center gap-1">
+          <i data-lucide="list-music" class="w-3.5 h-3.5"></i>
+          <span>View Queue (<span id="queueLengthText">5</span>)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Current Channel Song List -->
+    <section class="p-4 flex-1">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-vintage font-bold text-xs tracking-wider uppercase text-saloon-ink flex items-center gap-1.5">
+          <i data-lucide="cassette-tape" class="w-4 h-4 text-saloon-goldDark"></i>
+          On-Air Rotation Archive
+        </h2>
+        <span class="text-[10px] font-mono text-saloon-inkMuted">Tap song to tune in</span>
+      </div>
+
+      <div class="space-y-2" id="channelTracksList">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- WhatsApp & Community Notice -->
+    <section class="mx-4 mb-4 p-4 rounded-xl bg-saloon-card border border-saloon-border shadow-xs flex flex-col gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-full bg-[#25D366]/20 text-[#25D366] flex items-center justify-center shrink-0">
+          <i data-lucide="message-circle" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold font-vintage text-saloon-ink">Deluxe Saloon Chai Club</h3>
+          <p class="text-[11px] text-saloon-inkMuted font-bodySerif">Send requests or join late-night roadside radio tape sessions.</p>
+        </div>
+      </div>
+      <a href="https://whatsapp.com" target="_blank" class="mt-1 w-full text-center py-2 bg-saloon-red hover:bg-saloon-redDark text-white font-mono text-xs font-bold rounded-lg transition active:scale-95 shadow-xs">
+        Join Saloon WhatsApp Group →
+      </a>
+    </section>
+
+    <!-- Fixed Bottom Audio Player Dock -->
+    <footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-saloon-card/95 backdrop-blur-md border-t border-saloon-border p-3 px-4 z-50 shadow-2xl">
+      
+      <!-- Interactive Scrubber Timeline (Smooth Pointerdown/Pointerup) -->
+      <div class="flex items-center gap-2 mb-1.5">
+        <span id="timerCurrent" class="text-[10px] font-mono text-saloon-ink font-semibold min-w-[28px] text-right">0:00</span>
+        <input 
+          type="range" 
+          id="audioScrubber" 
+          min="0" 
+          max="100" 
+          value="0" 
+          step="0.1"
+          class="w-full h-1.5 bg-saloon-border rounded-lg appearance-none cursor-pointer accent-saloon-red"
+        />
+        <span id="timerDuration" class="text-[10px] font-mono text-saloon-inkMuted min-w-[28px]">0:00</span>
+      </div>
+
+      <!-- Dock Metadata & Main Transport Controls -->
+      <div class="flex items-center justify-between gap-2">
+        
+        <!-- Track Thumbnail & Title -->
+        <div class="flex items-center gap-2.5 min-w-0 flex-1 cursor-pointer" onclick="toggleQueueDrawer()">
+          <div class="w-10 h-10 rounded-lg bg-saloon-ink text-saloon-cream flex items-center justify-center shrink-0 relative overflow-hidden shadow-xs">
+            <i data-lucide="disc" class="w-5 h-5 text-saloon-gold"></i>
+          </div>
+          <div class="min-w-0">
+            <h4 id="dockSongTitle" class="text-xs font-bold font-hindi truncate text-saloon-ink">
+              चुरा के दिल मेरा
+            </h4>
+            <p id="dockSongSubtitle" class="text-[10px] font-bodySerif text-saloon-inkMuted truncate">
+              Main Khiladi Tu Anari • Kumar Sanu & Alka Yagnik
+            </p>
+          </div>
+        </div>
+
+        <!-- Audio Action Controls: Prev, Play/Pause/Buffer, Next, Volume/Queue -->
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button onclick="playPrevTrack()" class="p-2 rounded-full hover:bg-saloon-border text-saloon-ink transition active:scale-90" title="Previous Track">
+            <i data-lucide="skip-back" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Master Play / Pause Button with Buffering Spinner -->
+          <button id="masterPlayBtn" onclick="togglePlayback()" class="w-11 h-11 rounded-full bg-saloon-red hover:bg-saloon-redDark text-white flex items-center justify-center shadow-md active:scale-90 transition" title="Play or Pause">
+            <i data-lucide="play" id="playIconGraphic" class="w-5 h-5 ml-0.5"></i>
+            <i data-lucide="loader-2" id="bufferSpinner" class="w-5 h-5 animate-spin hidden"></i>
+          </button>
+
+          <button onclick="playNextTrack()" class="p-2 rounded-full hover:bg-saloon-border text-saloon-ink transition active:scale-90" title="Next Track">
+            <i data-lucide="skip-forward" class="w-4 h-4"></i>
+          </button>
+
+          <button onclick="toggleQueueDrawer()" class="p-2 rounded-full hover:bg-saloon-border text-saloon-ink transition active:scale-90" title="Open Queue Drawer">
+            <i data-lucide="list-music" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Slide-over Queue Modal -->
+    <div id="queueDrawer" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-end">
+      <div class="w-full max-w-md mx-auto bg-saloon-cream border-t-2 border-saloon-border rounded-t-2xl p-5 shadow-2xl flex flex-col max-h-[80vh]">
+        
+        <div class="flex items-center justify-between pb-3 border-b border-saloon-border">
+          <div>
+            <h3 class="font-vintage font-bold text-sm text-saloon-ink">Radio Queue & Custom Tapes</h3>
+            <p class="text-[10px] text-saloon-inkMuted font-mono">Select tracks or paste any YouTube Video ID</p>
+          </div>
+          <button onclick="toggleQueueDrawer()" class="p-1 rounded hover:bg-saloon-card text-saloon-ink">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- Custom YouTube Track Input Bar -->
+        <div class="mt-3 flex gap-2">
+          <input 
+            type="text" 
+            id="customYtInput" 
+            placeholder="Paste YouTube ID / URL (e.g. dQw4w9WgXcQ)"
+            class="flex-1 bg-saloon-card border border-saloon-border rounded-lg px-3 py-1.5 text-xs font-mono focus:outline-none focus:border-saloon-red"
+          />
+          <button onclick="addCustomYouTubeTrack()" class="bg-saloon-red hover:bg-saloon-redDark text-white text-xs font-mono font-bold px-3 py-1.5 rounded-lg active:scale-95 transition">
+            Add
+          </button>
+        </div>
+
+        <!-- Interactive Queue List Items -->
+        <div class="mt-3 flex-1 overflow-y-auto space-y-2 pr-1" id="queueItemsContainer">
+          <!-- Rendered in JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- PWA Install Modal -->
+    <div id="pwaModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      <div class="bg-saloon-cream border-2 border-saloon-border rounded-2xl p-5 max-w-xs w-full shadow-2xl text-center">
+        <div class="w-12 h-12 mx-auto rounded-full bg-saloon-red text-white flex items-center justify-center mb-3 shadow-md">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <h3 class="font-vintage font-bold text-sm text-saloon-ink mb-1">Install Deluxe Saloon</h3>
+        <p class="text-xs text-saloon-inkMuted mb-3 font-bodySerif">
+          Run Deluxe Saloon full-screen on mobile without browser navigation bars.
+        </p>
+        <div class="text-left text-xs bg-saloon-card p-3 rounded-lg border border-saloon-border space-y-1 font-mono text-saloon-ink">
+          <p>1. Open Safari / Chrome browser share menu.</p>
+          <p>2. Tap <b>"Add to Home Screen"</b>.</p>
+          <p>3. Tap icon to stream ambient radio anytime.</p>
+        </div>
+        <button onclick="togglePwaModal()" class="mt-4 w-full py-2 bg-saloon-ink text-saloon-cream font-mono text-xs font-bold rounded-lg active:scale-95 transition">
+          Done
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------------------
+    // 1. CHANNELS & CURATED NOSTALGIC YOUTUBE TRACK REPERTOIRE (EMBEDDABLE)
+    // ---------------------------------------------------------------------------
+    const CHANNELS = [
+      { id: 'highway', name: 'Highway Raat', hindi: 'हाईवे रात' },
+      { id: 'classics', name: 'Saloon Classics', hindi: 'सैलून क्लासिक्स' },
+      { id: 'dard', name: '90s Dard', hindi: 'दर्द-ए-दिल' },
+      { id: 'shaadi', name: 'Shaadi & Sunday', hindi: 'शादी और संडे' },
+      { id: 'monsoon', name: 'Monsoon Cassette', hindi: 'बरसात स्पेशल' }
+    ];
+
+    const MASTER_PLAYLIST = [
+      {
+        id: 'dQw4w9WgXcQ', // Standard embed-permitted classic sample
+        title: 'चुरा के दिल मेरा',
+        titleEng: 'Chura Ke Dil Mera (1994)',
+        film: 'Main Khiladi Tu Anari',
+        artist: 'Kumar Sanu, Alka Yagnik',
+        channel: 'classics',
+      },
+      {
+        id: 'L0MK7qz13bU', // Embed-safe vintage pop instrumental
+        title: 'देखा है पहली बार',
+        titleEng: 'Dekha Hai Pehli Baar (1991)',
+        film: 'Saajan',
+        artist: 'S.P. Balasubrahmanyam, Alka Yagnik',
+        channel: 'highway',
+      },
+      {
+        id: 'kJQP7kiw5Fk', // High-traffic embed-enabled classic
+        title: 'धीरे धीरे से मेरी ज़िंदगी',
+        titleEng: 'Dheere Dheere Se (1990)',
+        film: 'Aashiqui',
+        artist: 'Kumar Sanu, Anuradha Paudwal',
+        channel: 'dard',
+      },
+      {
+        id: '9bZkp7q19f0',
+        title: 'टिप टिप बरसा पानी',
+        titleEng: 'Tip Tip Barsa Paani (1994)',
+        film: 'Mohra',
+        artist: 'Udit Narayan, Alka Yagnik',
+        channel: 'monsoon',
+      },
+      {
+        id: 'fJ9rUzIMcZQ',
+        title: 'तुम से अच्छा कौन है',
+        titleEng: 'Tum Se Achha Kaun Hai (1999)',
+        film: 'Janwar',
+        artist: 'Udit Narayan',
+        channel: 'shaadi',
+      }
+    ];
+
+    // ---------------------------------------------------------------------------
+    // 2. STATE MANAGEMENT
+    // ---------------------------------------------------------------------------
+    let currentChannel = 'highway';
+    let playlistQueue = [...MASTER_PLAYLIST];
+    let currentQueueIndex = 0;
+    let isPlaying = false;
+    let isBuffering = false;
+    let isScrubbing = false;
+
+    let ytPlayer = null;
+    let pollInterval = null;
+    let tapeCounterValue = 0;
+
+    // ---------------------------------------------------------------------------
+    // 3. YOUTUBE IFRAME API INJECTION & LIFECYCLE
+    // ---------------------------------------------------------------------------
+    // Load YouTube IFrame API script tag dynamically
+    const tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    const firstScript = document.getElementsByTagName('script')[0];
+    firstScript.parentNode.insertBefore(tag, firstScript);
+
+    // YouTube API callback on ready
+    window.onYouTubeIframeAPIReady = function() {
+      const initialTrack = playlistQueue[currentQueueIndex];
+      ytPlayer = new YT.Player('yt-player-anchor', {
+        height: '1',
+        width: '1',
+        videoId: initialTrack.id,
+        playerVars: {
+          autoplay: 0,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          playsinline: 1,
+          rel: 0,
+          modestbranding: 1
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+          onError: onPlayerError
+        }
+      });
+    };
+
+    function onPlayerReady(event) {
+      updateTrackDurationUI();
+      renderQueueDrawer();
+    }
+
+    function onPlayerStateChange(event) {
+      // YT.PlayerState: 1 = PLAYING, 2 = PAUSED, 3 = BUFFERING, 0 = ENDED
+      if (event.data === YT.PlayerState.PLAYING) {
+        isPlaying = true;
+        isBuffering = false;
+        startPolling();
+        updateTransportUI();
+      } else if (event.data === YT.PlayerState.PAUSED) {
+        isPlaying = false;
+        isBuffering = false;
+        stopPolling();
+        updateTransportUI();
+      } else if (event.data === YT.PlayerState.BUFFERING) {
+        isBuffering = true;
+        updateTransportUI();
+      } else if (event.data === YT.PlayerState.ENDED) {
+        playNextTrack();
+      }
+    }
+
+    function onPlayerError(event) {
+      console.warn("YouTube Embed Error (Code " + event.data + "). Auto-skipping to next tape...");
+      playNextTrack();
+    }
+
+    // ---------------------------------------------------------------------------
+    // 4. PROGRESS POLLING & SMOOTH TIMELINE SCRUBBING
+    // ---------------------------------------------------------------------------
+    function startPolling() {
+      stopPolling();
+      pollInterval = setInterval(() => {
+        if (!ytPlayer || typeof ytPlayer.getCurrentTime !== 'function') return;
+
+        if (!isScrubbing) {
+          const currentTime = ytPlayer.getCurrentTime();
+          const duration = ytPlayer.getDuration() || 1;
+          const scrubber = document.getElementById('audioScrubber');
+          
+          scrubber.value = (currentTime / duration) * 100 || 0;
+          document.getElementById('timerCurrent').innerText = formatSeconds(currentTime);
+          document.getElementById('timerDuration').innerText = formatSeconds(duration);
+        }
+
+        // Simulate mechanical tape counter increment
+        tapeCounterValue = (tapeCounterValue + 1) % 999;
+        document.getElementById('tapeCounterDisplay').innerText = String(tapeCounterValue).padStart(3, '0');
+
+        // Randomize VU meter lights slightly while playing
+        pulseVuMeter();
+      }, 250);
+    }
+
+    function stopPolling() {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+      resetVuMeter();
+    }
+
+    function formatSeconds(secs) {
+      if (isNaN(secs) || secs < 0) return '0:00';
+      const m = Math.floor(secs / 60);
+      const s = Math.floor(secs % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function updateTrackDurationUI() {
+      if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        const dur = ytPlayer.getDuration();
+        document.getElementById('timerDuration').innerText = formatSeconds(dur);
+      }
+    }
+
+    // Bind scrubber events with pointerdown/pointerup
+    const scrubberEl = document.getElementById('audioScrubber');
+    scrubberEl.addEventListener('pointerdown', () => {
+      isScrubbing = true;
+    });
+
+    scrubberEl.addEventListener('input', (e) => {
+      if (!ytPlayer || typeof ytPlayer.getDuration !== 'function') return;
+      const dur = ytPlayer.getDuration() || 100;
+      const previewTime = (e.target.value / 100) * dur;
+      document.getElementById('timerCurrent').innerText = formatSeconds(previewTime);
+    });
+
+    scrubberEl.addEventListener('pointerup', (e) => {
+      isScrubbing = false;
+      if (ytPlayer && typeof ytPlayer.seekTo === 'function') {
+        const dur = ytPlayer.getDuration() || 100;
+        const targetSeconds = (e.target.value / 100) * dur;
+        ytPlayer.seekTo(targetSeconds, true);
+      }
+    });
+
+    // ---------------------------------------------------------------------------
+    // 5. PLAYBACK CONTROLS & CASSETTE VISUALIZATIONS
+    // ---------------------------------------------------------------------------
+    function togglePlayback() {
+      if (!ytPlayer || typeof ytPlayer.playVideo !== 'function') return;
+
+      // Ensure web audio context is activated on gesture if crackle is on
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      if (isPlaying) {
+        ytPlayer.pauseVideo();
+      } else {
+        ytPlayer.playVideo();
+      }
+    }
+
+    function loadAndPlayTrack(index) {
+      currentQueueIndex = index;
+      const track = playlistQueue[currentQueueIndex];
+
+      if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        isBuffering = true;
+        updateTransportUI();
+        ytPlayer.loadVideoById(track.id);
+        ytPlayer.playVideo();
+      }
+
+      syncCurrentTrackMetadata();
+      renderQueueDrawer();
+      renderChannelTracks();
+    }
+
+    function playNextTrack() {
+      const nextIndex = (currentQueueIndex + 1) % playlistQueue.length;
+      loadAndPlayTrack(nextIndex);
+    }
+
+    function playPrevTrack() {
+      const prevIndex = (currentQueueIndex - 1 + playlistQueue.length) % playlistQueue.length;
+      loadAndPlayTrack(prevIndex);
+    }
+
+    function syncCurrentTrackMetadata() {
+      const track = playlistQueue[currentQueueIndex];
+      document.getElementById('cassetteTapeLabel').innerText = `${track.titleEng.toUpperCase()}`;
+      document.getElementById('dockSongTitle').innerText = track.title;
+      document.getElementById('dockSongSubtitle').innerText = `${track.film} • ${track.artist}`;
+    }
+
+    function updateTransportUI() {
+      const playIcon = document.getElementById('playIconGraphic');
+      const spinner = document.getElementById('bufferSpinner');
+      const reelL = document.getElementById('reelLeft');
+      const reelR = document.getElementById('reelRight');
+      const statusTag = document.getElementById('engineStatusTag');
+
+      if (isBuffering) {
+        playIcon.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        statusTag.innerHTML = `<i data-lucide="loader" class="w-3 h-3 animate-spin text-saloon-red"></i><span>Buffering...</span>`;
+      } else if (isPlaying) {
+        spinner.classList.add('hidden');
+        playIcon.classList.remove('hidden');
+        playIcon.setAttribute('data-lucide', 'pause');
+        reelL.classList.add('animate-spinReel');
+        reelR.classList.add('animate-spinReel');
+        statusTag.innerHTML = `<i data-lucide="volume-2" class="w-3 h-3 text-saloon-red animate-pulse"></i><span class="text-saloon-redDark font-bold">Tape Playing</span>`;
+      } else {
+        spinner.classList.add('hidden');
+        playIcon.classList.remove('hidden');
+        playIcon.setAttribute('data-lucide', 'play');
+        reelL.classList.remove('animate-spinReel');
+        reelR.classList.remove('animate-spinReel');
+        statusTag.innerHTML = `<i data-lucide="disc-3" class="w-3 h-3 text-saloon-goldDark"></i><span>Tape Paused</span>`;
+      }
+      lucide.createIcons();
+    }
+
+    function pulseVuMeter() {
+      const lights = document.querySelectorAll('#vuL div');
+      const level = Math.floor(Math.random() * (lights.length + 1));
+      lights.forEach((el, idx) => {
+        if (idx < level) {
+          el.classList.add('bg-saloon-gold');
+          el.classList.remove('bg-[#c7b196]');
+        } else {
+          el.classList.remove('bg-saloon-gold');
+          el.classList.add('bg-[#c7b196]');
+        }
+      });
+    }
+
+    function resetVuMeter() {
+      const lights = document.querySelectorAll('#vuL div');
+      lights.forEach(el => {
+        el.classList.remove('bg-saloon-gold');
+        el.classList.add('bg-[#c7b196]');
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // 6. ROTATIONS & TRACKLIST RENDERING
+    // ---------------------------------------------------------------------------
+    function renderRotations() {
+      const container = document.getElementById('rotationChips');
+      container.innerHTML = CHANNELS.map(ch => {
+        const isActive = ch.id === currentChannel;
+        return `
+          <button 
+            onclick="switchChannel('${ch.id}')"
+            class="px-3 py-1.5 rounded-full border text-[11px] font-mono font-semibold whitespace-nowrap transition active:scale-95 ${
+              isActive 
+                ? 'bg-saloon-red text-white border-saloon-red shadow-xs' 
+                : 'bg-saloon-card border-saloon-border hover:bg-saloon-cardHover text-saloon-ink'
+            }"
+          >
+            ${ch.name} • ${ch.hindi}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderChannelTracks() {
+      const container = document.getElementById('channelTracksList');
+      const filtered = playlistQueue.filter(t => t.channel === currentChannel);
+      const listToDisplay = filtered.length > 0 ? filtered : playlistQueue;
+
+      container.innerHTML = listToDisplay.map((track) => {
+        const queueIdx = playlistQueue.findIndex(t => t.id === track.id);
+        const isCurrent = queueIdx === currentQueueIndex;
+
+        return `
+          <div 
+            onclick="loadAndPlayTrack(${queueIdx})"
+            class="p-2.5 rounded-lg border transition cursor-pointer flex items-center justify-between group active:scale-[0.99] ${
+              isCurrent 
+                ? 'bg-[#eedec8] border-saloon-gold shadow-xs' 
+                : 'bg-saloon-card border-saloon-border hover:bg-saloon-cardHover'
+            }"
+          >
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center font-mono text-xs font-bold shrink-0 ${
+                isCurrent ? 'bg-saloon-red text-white' : 'bg-saloon-border/70 text-saloon-ink'
+              }">
+                ${isCurrent && isPlaying ? '<i data-lucide="radio" class="w-3.5 h-3.5 animate-pulse"></i>' : (queueIdx + 1)}
+              </div>
+              <div class="min-w-0">
+                <p class="font-hindi font-bold text-xs truncate ${isCurrent ? 'text-saloon-redDark' : 'text-saloon-ink'}">
+                  ${track.title} <span class="font-sans font-normal text-[11px] text-saloon-inkMuted">(${track.film})</span>
+                </p>
+                <p class="text-[10px] font-bodySerif text-saloon-inkMuted truncate">
+                  ${track.artist}
+                </p>
+              </div>
+            </div>
+            <div class="text-right shrink-0 pl-2">
+              <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-saloon-border/60 text-saloon-inkMuted font-bold">
+                ${track.channel || 'saloon'}
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    function switchChannel(channelId) {
+      currentChannel = channelId;
+      const ch = CHANNELS.find(c => c.id === channelId);
+      document.getElementById('activeChannelBadge').innerText = ch ? ch.name : 'All';
+      
+      renderRotations();
+      renderChannelTracks();
+
+      // Automatically play first song from this rotation
+      const matchIdx = playlistQueue.findIndex(t => t.channel === channelId);
+      if (matchIdx !== -1) {
+        loadAndPlayTrack(matchIdx);
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // 7. QUEUE DRAWER & CUSTOM YOUTUBE INPUT
+    // ---------------------------------------------------------------------------
+    function toggleQueueDrawer() {
+      const drawer = document.getElementById('queueDrawer');
+      drawer.classList.toggle('hidden');
+      if (!drawer.classList.contains('hidden')) {
+        renderQueueDrawer();
+      }
+    }
+
+    function renderQueueDrawer() {
+      document.getElementById('queueLengthText').innerText = playlistQueue.length;
+      const container = document.getElementById('queueItemsContainer');
+      
+      container.innerHTML = playlistQueue.map((track, i) => {
+        const isCurrent = i === currentQueueIndex;
+        return `
+          <div 
+            onclick="loadAndPlayTrack(${i})" 
+            class="p-2.5 rounded-lg border flex items-center justify-between text-xs cursor-pointer transition ${
+              isCurrent 
+                ? 'bg-[#eedec8] border-saloon-gold font-bold text-saloon-redDark' 
+                : 'bg-saloon-card border-saloon-border hover:bg-saloon-cardHover text-saloon-ink'
+            }"
+          >
+            <div class="truncate pr-2">
+              <p class="truncate text-xs font-hindi">${track.title}</p>
+              <p class="text-[10px] text-saloon-inkMuted font-sans">${track.artist || track.titleEng}</p>
+            </div>
+            <span class="font-mono text-[9px] px-1.5 py-0.5 rounded bg-saloon-border text-saloon-ink uppercase shrink-0">
+              ${isCurrent ? 'Playing' : '#' + (i + 1)}
+            </span>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function extractYouTubeId(urlOrId) {
+      const trimmed = urlOrId.trim();
+      const match = trimmed.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+      return match ? match[1] : (trimmed.length === 11 ? trimmed : null);
+    }
+
+    function addCustomYouTubeTrack() {
+      const input = document.getElementById('customYtInput');
+      const val = input.value;
+      const ytId = extractYouTubeId(val);
+
+      if (!ytId) {
+        alert("Please enter a valid YouTube Video ID or URL.");
+        return;
+      }
+
+      const newTrack = {
+        id: ytId,
+        title: 'कस्टम सैलून टेप',
+        titleEng: `Custom Tape (${ytId})`,
+        film: 'User Request',
+        artist: 'Cassette Deck Import',
+        channel: currentChannel,
+      };
+
+      playlistQueue.push(newTrack);
+      input.value = '';
+      renderQueueDrawer();
+      renderChannelTracks();
+      loadAndPlayTrack(playlistQueue.length - 1);
+    }
+
+    // ---------------------------------------------------------------------------
+    // 8. WEB AUDIO API SYNTHESIZER: VINYL CRACKLE & CHAI AMBIENCE
+    // ---------------------------------------------------------------------------
+    let audioCtx = null;
+    let crackleSourceNode = null;
+    let crackleGainNode = null;
+    let isCrackleActive = false;
+
+    function initCrackleAudio() {
+      if (!audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioCtx();
+      }
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      // Generate 2 seconds of pink/vinyl hiss buffer
+      const bufferSize = audioCtx.sampleRate * 2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      let b0 = 0, b1 = 0, b2 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        let pink = (b0 + b1 + b2 + white * 0.5362) * 0.12;
+
+        // Add periodic vinyl pops
+        if (Math.random() < 0.0007) {
+          pink += (Math.random() > 0.5 ? 0.75 : -0.75);
+        }
+        data[i] = pink;
+      }
+
+      crackleSourceNode = audioCtx.createBufferSource();
+      crackleSourceNode.buffer = buffer;
+      crackleSourceNode.loop = true;
+
+      // Bandpass filter to recreate 70s-80s transistor radio horn sound
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1450;
+      filter.Q.value = 0.85;
+
+      crackleGainNode = audioCtx.createGain();
+      crackleGainNode.gain.value = 0.22;
+
+      crackleSourceNode.connect(filter);
+      filter.connect(crackleGainNode);
+      crackleGainNode.connect(audioCtx.destination);
+      crackleSourceNode.start(0);
+    }
+
+    function toggleCrackleEffect() {
+      const btn = document.getElementById('crackleToggleBtn');
+      const label = document.getElementById('crackleLabel');
+      const icon = document.getElementById('crackleIcon');
+
+      if (!isCrackleActive) {
+        initCrackleAudio();
+        isCrackleActive = true;
+        label.innerText = 'ON';
+        label.className = 'text-green-700 font-bold';
+        btn.classList.add('border-saloon-gold', 'bg-[#eedec8]');
+        icon.classList.add('animate-spin');
+      } else {
+        if (crackleGainNode) {
+          crackleGainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+          setTimeout(() => {
+            if (crackleSourceNode) {
+              crackleSourceNode.stop();
+              crackleSourceNode.disconnect();
+              crackleSourceNode = null;
+            }
+          }, 200);
+        }
+        isCrackleActive = false;
+        label.innerText = 'OFF';
+        label.className = 'text-saloon-redDark';
+        btn.classList.remove('border-saloon-gold', 'bg-[#eedec8]');
+        icon.classList.remove('animate-spin');
+      }
+    }
+
+    // ---------------------------------------------------------------------------
+    // 9. PWA MODAL & LIVE CLOCK
+    // ---------------------------------------------------------------------------
+    function togglePwaModal() {
+      const modal = document.getElementById('pwaModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function updateLiveClock() {
+      const now = new Date();
+      let hours = now.getHours();
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      document.getElementById('liveClockText').innerText = `${hours}:${mins} ${ampm}`;
+    }
+
+    // ---------------------------------------------------------------------------
+    // 10. APP BOOTSTRAP
+    // ---------------------------------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      renderRotations();
+      renderChannelTracks();
+      syncCurrentTrackMetadata();
+      updateLiveClock();
+      setInterval(updateLiveClock, 30000);
+      lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
